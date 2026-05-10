@@ -1,4 +1,9 @@
-import { createNote, deleteNode, getNotes, updateNote as update } from '../services/note.service.js'
+import {
+  createNote,
+  deleteNote as removeNote,
+  getNotes,
+  updateNote as update,
+} from '../services/note.service.js'
 
 export const getAllNotes = async (_, res) => {
   try {
@@ -40,7 +45,7 @@ export const updateNote = async (req, res) => {
 export const deleteNote = async (req, res) => {
   try {
     const { id } = req.query
-    const deletedNote = await deleteNode(id)
+    const deletedNote = await removeNote(id)
     res.status(200).json({ success: true, data: deletedNote })
   } catch (error) {
     res.status(500).json({

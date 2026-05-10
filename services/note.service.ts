@@ -26,7 +26,7 @@ export const updateNote = async (id: string, newNote: CreateNoteDto) => {
   })
 }
 
-export const deleteNode = async (id: string) => {
+export const deleteNote = async (id: string) => {
   const existingNote = prisma.note.findUnique({
     where: { id },
   })

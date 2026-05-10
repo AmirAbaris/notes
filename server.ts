@@ -4,6 +4,7 @@ import helmet from 'helmet'
 import morgan from 'morgan'
 import dotenv from 'dotenv'
 import router from './routes/notes.route.js'
+import { errorHandler, notFound } from './middlewares/error-handler.js'
 
 dotenv.config()
 
@@ -19,6 +20,9 @@ app.use('/notes', router)
 app.get('/', (_, res) => {
   res.json({ message: 'API running' })
 })
+
+app.use(notFound)
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 4000
 

@@ -1,15 +1,16 @@
 import { prisma } from '../lib/prisma'
 import { CreateNoteDto } from '../types/note'
+import { HttpError } from '../middlewares/error-handler.js'
 
 export const getNotes = async () => {
   return await prisma.note.findMany()
 }
 
 export const getNoteById = async (id: string) => {
-  const existingNote = prisma.note.findUnique({ where: { id } })
+  const existingNote = await prisma.note.findUnique({ where: { id } })
 
   if (!existingNote) {
-    throw new Error(`Note with id ${id} not found`)
+    throw new HttpError(404, `Note with id ${id} not found`)
   }
 
   return existingNote
@@ -22,12 +23,12 @@ export const createNote = async (newNote: CreateNoteDto) => {
 }
 
 export const updateNote = async (id: string, newNote: CreateNoteDto) => {
-  const existingNote = prisma.note.findUnique({
+  const existingNote = await prisma.note.findUnique({
     where: { id },
   })
 
   if (!existingNote) {
-    throw new Error(`Note with id ${id} not found`)
+    throw new HttpError(404, `Note with id ${id} not found`)
   }
 
   return await prisma.note.update({
@@ -37,12 +38,12 @@ export const updateNote = async (id: string, newNote: CreateNoteDto) => {
 }
 
 export const deleteNote = async (id: string) => {
-  const existingNote = prisma.note.findUnique({
+  const existingNote = await prisma.note.findUnique({
     where: { id },
   })
 
   if (!existingNote) {
-    throw new Error(`Note with id ${id} not found`)
+    throw new HttpError(404, `Note with id ${id} not found`)
   }
 
   return await prisma.note.delete({

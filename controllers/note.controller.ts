@@ -1,3 +1,4 @@
+import type { RequestHandler } from 'express'
 import {
   createNote,
   deleteNote as removeNote,
@@ -6,69 +7,50 @@ import {
   getNoteById,
 } from '../services/note.service.js'
 
-export const getAllNotes = async (_, res) => {
+export const getAllNotes: RequestHandler = async (_, res, next) => {
   try {
     const notes = await getNotes()
     res.status(200).json({ success: true, data: notes })
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    })
+    next(error)
   }
 }
 
-export const getNote = async (req, res) => {
+export const getNote: RequestHandler = async (req, res, next) => {
   try {
-    const { id } = req.params
+    const id = req.params.id as string
     const notes = await getNoteById(id)
     res.status(200).json({ success: true, data: notes })
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    })
+    next(error)
   }
 }
 
-export const createNewNote = async (req, res) => {
+export const createNewNote: RequestHandler = async (req, res, next) => {
   try {
     const notes = await createNote(req.body)
     res.status(201).json({ success: true, data: notes })
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    })
+    next(error)
   }
 }
 
-export const updateNote = async (req, res) => {
+export const updateNote: RequestHandler = async (req, res, next) => {
   try {
-    const { id } = req.params
-    console.log('=== UPDATE NOTE DEBUG ===')
-    console.log('req.params:', req.params)
-    console.log('Extracted id:', id)
-    console.log('req.body:', req.body)
+    const id = req.params.id as string
     const notes = await update(id, req.body)
     res.status(200).json({ success: true, data: notes })
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    })
+    next(error)
   }
 }
 
-export const deleteNote = async (req, res) => {
+export const deleteNote: RequestHandler = async (req, res, next) => {
   try {
-    const { id } = req.params
+    const id = req.params.id as string
     const deletedNote = await removeNote(id)
     res.status(200).json({ success: true, data: deletedNote })
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    })
+    next(error)
   }
 }

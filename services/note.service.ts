@@ -5,6 +5,16 @@ export const getNotes = async () => {
   return await prisma.note.findMany()
 }
 
+export const getNoteById = async (id: string) => {
+  const existingNote = prisma.note.findUnique({ where: { id } })
+
+  if (!existingNote) {
+    throw new Error(`Note with id ${id} not found`)
+  }
+
+  return existingNote
+}
+
 export const createNote = async (newNote: CreateNoteDto) => {
   return await prisma.note.create({
     data: newNote,

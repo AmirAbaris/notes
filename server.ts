@@ -3,8 +3,9 @@ import cors from 'cors'
 import helmet from 'helmet'
 import morgan from 'morgan'
 import dotenv from 'dotenv'
-import router from './routes/notes.route.js'
 import { errorHandler, notFound } from './middlewares/error-handler.js'
+import notesRouter from './routes/notes.route.js'
+import userRouter from './routes/user.route.js'
 
 dotenv.config()
 
@@ -15,7 +16,8 @@ app.use(helmet())
 app.use(morgan('dev'))
 app.use(express.json())
 
-app.use('/notes', router)
+app.use('/notes', notesRouter)
+app.use('/user', userRouter)
 
 app.get('/', (_, res) => {
   res.json({ message: 'API running' })

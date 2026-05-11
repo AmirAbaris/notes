@@ -3,11 +3,15 @@ import { CreateNoteDto } from '../types/note'
 import { HttpError } from '../middlewares/error-handler.js'
 
 export const getNotes = async () => {
-  return await prisma.note.findMany()
+  return await prisma.note.findMany({
+    include: {
+      user: true,
+    },
+  })
 }
 
 export const getNoteById = async (id: string) => {
-  const existingNote = await prisma.note.findUnique({ where: { id } })
+  const existingNote = await prisma.note.findUnique({ where: { id }, include: { user: true } })
 
   if (!existingNote) {
     throw new HttpError(404, `Note with id ${id} not found`)

@@ -5,6 +5,10 @@ import { prisma } from '../lib/prisma'
 
 const JWT_SECRET = process.env.JWT_SECRET!
 
+type AccessTokenPayload = jwt.JwtPayload & {
+  userId: string
+}
+
 export const authMiddleware = async (req: Request, _: Response, next: NextFunction) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '')
@@ -13,19 +17,22 @@ export const authMiddleware = async (req: Request, _: Response, next: NextFuncti
       throw new HttpError(401, `No token provided`)
     }
 
-    jwt.verify(token, JWT_SECRET)
+    const payload = jwt.verify(token, JWT_SECRET) as AccessTokenPayload
 
-    const session = await prisma.session.findUnique({
-      where: { token },
-      include: { user: true },
-    })
-
-    if (!session || session.expiresAt < new Date()) {
-      throw new HttpError(401, `Invalid or expired session`)
+    if (!payload.userId) {
+      throw new HttpError(401, `Invalid access token`)
     }
 
-    req.user = session.user
-    req.token = token
+    const user = await prisma.user.findUnique({
+      where: { id: payload.userId },
+    })
+
+    if (!user) {
+      throw new HttpError(401, `Invalid access token`)
+    }
+
+    req.user = user
+    req.accessToken = token
 
     next()
   } catch (error) {

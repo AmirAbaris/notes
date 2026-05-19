@@ -21,18 +21,21 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   notes Note[]
-  session Session[]
+  refreshTokens RefreshTokenSession[]
 }
 
-model Session {
+model RefreshTokenSession {
   id String @id @default(uuid())
   userId String
-  token String @unique
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshToken String @unique
   expiresAt DateTime
   createdAt DateTime @default(now())
-  user User @relation(fields: [userId], references: [id])
-
-  @@index([token])
+  revokedAt DateTime?
+  userAgent String?
+  ip String?
+  @@index([refreshToken])
+  @@index([userId])
 }
 
 model Note {

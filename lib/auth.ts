@@ -1,24 +1,28 @@
 import jwt from 'jsonwebtoken'
 import { prisma } from './prisma'
+import crypto from 'crypto'
 
 const JWT_SECRET = process.env.JWT_SECRET!
-const JWT_EXPIRES_IN = '7d' // 7 days
+const ACCESS_EXPIRES_IN = '15m'
+const REFRESH_DAYS = 7
 
-export const generateTokenAndSession = async (userId: string) => {
-  const token = jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN })
+export const generateAccessToken = async (userId: string) => {
+  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: ACCESS_EXPIRES_IN })
+}
 
-  // Calculate expiration date
+export const generateRefreshToken = async (userId: string) => {
+  const token = crypto.randomBytes(64).toString('hex')
+
   const expiresAt = new Date()
-  expiresAt.setDate(expiresAt.getDate() + 7) // 7 days
+  expiresAt.setDate(expiresAt.getDate() + REFRESH_DAYS)
 
-  // Create session in database
-  const session = await prisma.session.create({
+  await prisma.refreshTokenSession.create({
     data: {
       userId,
-      token,
+      refreshToken: token,
       expiresAt,
     },
   })
 
-  return { token, session }
+  return token
 }

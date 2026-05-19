@@ -8,5 +8,6 @@ export type NoteDto = {
 export type CreateNoteDto = {
   title: string
   body: string
-  userId: string
 }
+
+export type UpdateNoteDto = Partial<CreateNoteDto>

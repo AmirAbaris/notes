@@ -5,7 +5,7 @@ import morgan from 'morgan'
 import dotenv from 'dotenv'
 import { errorHandler, notFound } from './middlewares/error-handler.js'
 import notesRouter from './routes/notes.route.js'
-import userRouter from './routes/user.route.js'
+import userRouter from './routes/auth.route.js'
 
 dotenv.config()
 
@@ -17,7 +17,7 @@ app.use(morgan('dev'))
 app.use(express.json())
 
 app.use('/notes', notesRouter)
-app.use('/user', userRouter)
+app.use('/auth', userRouter)
 
 app.get('/', (_, res) => {
   res.json({ message: 'API running' })

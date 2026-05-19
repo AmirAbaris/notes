@@ -16,7 +16,23 @@ model User {
   id String @id @default(uuid())
   name String
   username String @unique
+  email String @unique
+  password String // hashed
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   notes Note[]
+  session Session[]
+}
+
+model Session {
+  id String @id @default(uuid())
+  userId String
+  token String @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([token])
 }
 
 model Note {
